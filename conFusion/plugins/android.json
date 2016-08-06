@@ -30,10 +30,22 @@
         },
         "ionic-plugin-keyboard": {
             "PACKAGE_NAME": "com.ionicframework.confusion529896"
+        },
+        "cordova-plugin-camera": {
+            "PACKAGE_NAME": "com.ionicframework.confusion529896"
+        },
+        "cordova-plugin-image-picker": {
+            "PACKAGE_NAME": "com.ionicframework.confusion529896"
+        },
+        "cordova-plugin-vibration": {
+            "PACKAGE_NAME": "com.ionicframework.confusion529896"
         }
     },
     "dependent_plugins": {
         "cordova-plugin-app-event": {
+            "PACKAGE_NAME": "com.ionicframework.confusion529896"
+        },
+        "cordova-plugin-compat": {
             "PACKAGE_NAME": "com.ionicframework.confusion529896"
         }
     }
