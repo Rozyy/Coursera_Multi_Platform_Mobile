@@ -301,7 +301,7 @@ angular.module('conFusion.controllers', [])
         $scope.newComment.date = new Date().toISOString();
         console.log($scope.newComment);
         $scope.dish.comments.push($scope.newComment);
-        menuFactory.getDishes().update({id:$scope.dish.id},$scope.dish);
+        menuFactory.update({id:$scope.dish.id},$scope.dish);
         $scope.commentModal.hide();
         $scope.newComment = {rating:5, comment:"", author:"", date:""};
     };
@@ -322,7 +322,7 @@ angular.module('conFusion.controllers', [])
                 console.log($scope.mycomment);
                 
                 $scope.dish.comments.push($scope.mycomment);
-        menuFactory.getDishes().update({id:$scope.dish.id},$scope.dish);
+        menuFactory.update({id:$scope.dish.id},$scope.dish);
                 
                 $scope.commentForm.$setPristine();
                 
