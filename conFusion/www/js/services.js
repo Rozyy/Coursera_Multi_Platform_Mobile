@@ -1,18 +1,64 @@
 'use strict';
 
 angular.module('conFusion.services', ['ngResource'])
-        .constant("baseURL","http://192.168.1.144:3000/")
-       .factory('menuFactory', ['$resource', 'baseURL', function ($resource, baseURL) {
-
-            return $resource(baseURL + "dishes/:id", null, {
-                'update': {
-                    method: 'PUT'
-                }
-            });
+        .constant("baseURL","http://192.168.1.2:3000/")
+        .factory('menuFirebaseFactory',['$firebaseArray','$firebaseObject', function($firebaseArray, $firebaseObject){
+            var menuFac = {};
+            menuFac.getAllDishes = function() {
+                var ref = firebase.database().ref();
+               return $firebaseArray(ref.child('dishes'));
+            };
+            menuFac.getDishForIndex = function(index) {      
+                var childKey = "dishes/"+index;
+                var ref = firebase.database().ref().child(childKey);
+                return $firebaseObject(ref)
+           };
+            return menuFac;
+        }])
+        .factory('firebaseImagesFactory', ['$firebaseObject','$rootScope', function($firebaseObject, $rootScope) {
+            var firebaseImageFac = {};
+            firebaseImageFac.getImageUrlForCurrentDish = function(currentDish) {
+                var storageRef = firebase.storage().ref();
+                var starsRef = storageRef.child(currentDish.image);
+                starsRef.getDownloadURL().then(function(url) {
+                    currentDish.imageURL = url;  
+                }).catch(function(error) {
+                    return '';
+                });
+            };
+            
+            
+            firebaseImageFac.getImageUrlForProfilePicture = function(imageName) {
+                var storageRef = firebase.storage().ref();
+                var starsRef = storageRef.child(imageName);
+                starsRef.getDownloadURL().then(function(url) {
+                    console.log("got profile pic URL:"+url);
+                    $rootScope.profilePictureURL = url;  
+                }).catch(function(error) {
+                    console.log("error profile pic url");
+                    return '';
+                });
+            };
+            
+            
+            return firebaseImageFac;
+            
+        }])
+        .factory('loginFirebaseFactory', ['$firebaseAuth', '$firebaseObject', function ($firebaseAuth, $firebaseObject) {
+            var loginFunction = {};
+            loginFunction.loginWithUserNameAndPassword = function(userName, password) {
+                 var firebaseAuthObject = $firebaseAuth();
+                 firebaseAuthObject.$signInWithEmailAndPassword(userName, password).then(function(resultMsg){
+                        console.log("loin success");
+                        return true;
+                    }).catch(function(error) {
+                        console.log("loin failes");
+                        return false;
+                    });
+            };
+            return loginFunction;
 
          }])
-
-
         .factory('promotionFactory', ['$resource', 'baseURL', function ($resource, baseURL) {
             return $resource(baseURL + "promotions/:id");
 
@@ -41,7 +87,7 @@ angular.module('conFusion.services', ['ngResource'])
     var favFac = {};
     var favorites =  $localStorage.getObject('favorites','[]');
 
-    favFac.addToFavorites = function (index) {
+    favFac.addToFavorites  = function (index) {
         console.log("Starting now");
         for (var i = 0; i < favorites.length; i++) {
             if (favorites[i].id == index)

@@ -1,4 +1,4 @@
-angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conFusion.services'])
+angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conFusion.services', 'firebase'])
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $cordovaSplashscreen, $timeout) {
      $ionicPlatform.ready(function(){
     
@@ -45,6 +45,26 @@ angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conF
     templateUrl: 'templates/sidebar.html',
     controller: 'AppCtrl'
   })
+  
+  .state('app.Login', {
+    url: '/Login',
+    views: {
+      'mainContent': {
+        templateUrl: 'templates/login.html',
+          controller: 'LoginController'
+      }
+    }
+  })
+  .state('app.Register', {
+    url: '/Register',
+    views: {
+      'mainContent': {
+        templateUrl: 'templates/register.html',
+          controller: 'RegistrationController'
+      }
+    }
+  })
+  
 .state('app.home', {
     url: '/home',
     views: {
@@ -52,8 +72,8 @@ angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conF
         templateUrl: 'templates/home.html',
           controller: 'IndexController',
           resolve: {
-              dish: ['menuFactory', function (menuFactory) {
-                    return menuFactory.get({ id: 0});
+             dish: ['menuFirebaseFactory', function (menuFirebaseFactory) {
+                    return menuFirebaseFactory.getDishForIndex('0');
                 }],
              promotion: ['promotionFactory', function (promotionFactory) {
                     return promotionFactory.get({id: 0});
@@ -99,8 +119,8 @@ angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conF
           templateUrl: 'templates/favorites.html',
             controller:'FavoritesController',
           resolve: {
-              dishes:  ['menuFactory', function(menuFactory){
-                return menuFactory.query();
+              dishes:  ['menuFirebaseFactory', function(menuFirebaseFactory){
+                return menuFirebaseFactory.getAllDishes();
               }],
                             favorites: ['favoriteFactory', function(favoriteFactory) {
                   return favoriteFactory.getFavorites();
@@ -116,8 +136,8 @@ angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conF
           templateUrl: 'templates/menu.html',
           controller: 'MenuController',
             resolve:{
-                dishes:['menuFactory',function(menuFactory){
-                    return menuFactory.query();
+                dishes:['menuFirebaseFactory',function(menuFirebaseFactory){
+                    return menuFirebaseFactory.getAllDishes();
                 }]
             }
         }
@@ -131,14 +151,14 @@ angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conF
         templateUrl: 'templates/dishdetail.html',
         controller: 'DishDetailController',
         resolve: {
-            dish: ['$stateParams','menuFactory', function($stateParams, menuFactory){
-                return menuFactory.get({id:parseInt($stateParams.id, 10)});
+            dish: ['$stateParams','menuFirebaseFactory', function($stateParams, menuFirebaseFactory){
+                return menuFirebaseFactory.getDishForIndex($stateParams.id);
             }]
         }
       }
     }
   });
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/home');
+  $urlRouterProvider.otherwise('/app/Login');
 
 });

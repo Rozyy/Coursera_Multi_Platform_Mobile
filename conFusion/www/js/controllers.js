@@ -1,14 +1,9 @@
 angular.module('conFusion.controllers', [])
 
-.controller('AppCtrl', function ($scope, $ionicModal, $timeout, $localStorage, $ionicPlatform, $cordovaCamera, $cordovaImagePicker) {
+.controller('AppCtrl', function ($scope, $ionicModal, $timeout, $localStorage, $ionicPlatform, $cordovaCamera, $cordovaImagePicker, $firebaseAuth, $firebaseObject, $state,  $ionicHistory) {
+    
 
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
+    
   // Form data for the login modal
   $scope.loginData = $localStorage.getObject('userinfo','{}');
      $scope.reservation = {};
@@ -60,8 +55,16 @@ angular.module('conFusion.controllers', [])
   // Open the reserve modal
   $scope.reserve = function() {
     $scope.reserveform.show();
-  };
-
+  };  
+  $scope.logOut = function() {
+    firebase.auth().signOut().then(function() {
+        console.log("Signed out");
+        $state.go('app.Login');
+    }, function(error) {
+        console.log("Error signing out:", error);  
+    });
+    console.log("done");
+}
   // Perform the reserve action when the user submits the reserve form
   $scope.doReserve = function() {
     console.log('Doing reservation', $scope.reservation);
@@ -75,7 +78,71 @@ angular.module('conFusion.controllers', [])
     
 
     
-      // Create the registration modal that we will use later
+   
+})
+.controller('RegistrationController', ['$firebaseAuth','$firebaseObject', function($firebaseAuth, $firebaseObject){
+    var fireBaseRegistrationObject = {};
+    fireBaseRegistrationObject.registerWithEmailAndPassword = function(userEmail, userPassword) {
+         firebase.auth().$createUserWithEmailAndPassword(userEmail, userPassword)
+                .then(function(firebaseUser) {
+                    console.log("User " + firebaseUser.uid + " created successfully!");
+                }).catch(function(error) {
+                    console.error("Error: ", error);
+                });
+        };
+
+}])
+.controller('LoginController',['$firebaseAuth', '$firebaseObject', '$scope', '$ionicLoading', '$location','$state', '$ionicHistory', '$timeout', '$rootScope', '$ionicSideMenuDelegate', '$ionicModal','$ionicPlatform', '$cordovaCamera', 'firebaseImagesFactory', function($firebaseAuth, $firebaseObject, $scope, $ionicLoading, $location, $state, $ionicHistory, $timeout,  $rootScope, $ionicSideMenuDelegate,  $ionicModal, $ionicPlatform, $cordovaCamera, firebaseImagesFactory){
+    
+  $scope.$on('$ionicView.afterEnter', function(event) {
+    $rootScope.isHideMenuButton = true;
+  });
+    //enable side menu drag before moving to next view
+    $scope.$on('$ionicView.beforeLeave', function(event) {
+       $rootScope.isHideMenuButton = false;
+    });
+    $scope.showLoading = function() {
+            $ionicLoading.show({
+            template: 'Loading...',
+        }).then(function(){
+            console.log("The loading indicator is now displayed");
+        })
+    };
+            
+            
+        $scope.hideLoading = function(){
+            $ionicLoading.hide().then(function(){
+                console.log("The loading indicator is now hidden");
+            });
+        };
+        
+        $scope.loginWithUserNamePassword = function() {
+            console.log("Login Start::");
+            $scope.showLoading;
+                var firebaseAuthObject = $firebaseAuth();
+                 firebaseAuthObject.$signInWithEmailAndPassword($scope.loginData.username, $scope.loginData.password).then(function(resultMsg){
+                        console.log(resultMsg.email);
+                                $rootScope.email = resultMsg.email;
+                                firebaseImagesFactory.getImageUrlForProfilePicture('profilePic/'+resultMsg.email+'.jpeg');
+                                  $timeout(function() {        
+    }, 10000);
+                       $ionicHistory.nextViewOptions({
+                            disableBack: true
+                        });
+                     $state.go('app.home');
+                     console.log("Register End");
+                     
+                    }).catch(function(error) {
+                        console.log("loin failes");
+                      
+                    });
+        };
+        
+    
+    
+    
+    
+       // Create the registration modal that we will use later
     $ionicModal.fromTemplateUrl('templates/register.html', {
         scope: $scope
     }).then(function (modal) {
@@ -94,6 +161,49 @@ angular.module('conFusion.controllers', [])
 
     // Perform the registration action when the user submits the registration form
     $scope.doRegister = function () {
+        
+   
+        
+        
+        
+        $firebaseAuth().$createUserWithEmailAndPassword($scope.registration.email, $scope.registration.password)
+                .then(function(firebaseUser) {
+                    var metadata = {
+                        'contentType': 'image/jpeg'
+                    };
+                    console.log("User " + firebaseUser.uid + " created successfully!");
+                    //Need to store profile pic in case of successful registration
+                    //Captured picture is in bas64 encoding. Converting to blob which can be stored in firebase
+                    var storageRef = firebase.storage().ref();
+                    var  contentType = 'image/jpeg';
+                 
+                    var sliceSize = 512;
+                    // atob function decode a base64-encoded string into a new string with a char for each byte of the binary data.
+                    var byteCharacters = window.atob($scope.registration.imgContent);
+                    var byteArrays = [];    
+                    //create an array of byte values by applying this using the .charCodeAt method for each character 
+                    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                        var slice = byteCharacters.slice(offset, offset + sliceSize);
+                        var byteNumbers = new Array(slice.length);
+                        for (var i = 0; i < slice.length; i++) {
+                            byteNumbers[i] = slice.charCodeAt(i);
+                        }
+                        var byteArray = new Uint8Array(byteNumbers);
+                        byteArrays.push(byteArray);
+                    }
+                    //Coverting to blob
+                    var blob = new Blob(byteArrays, {type: contentType});
+                    //Passing blob to firebase
+                    storageRef.child('profilePic/'+$scope.registration.email + '.jpeg').put(blob, metadata).then(function(snapshot) {
+                        console.log('Uploaded');
+                    }).catch(function(error) {
+                        console.error('Upload failed:', error);
+                    });
+            
+            
+                }).catch(function(error) {
+                    console.error("Error: ", error);
+                });
         // Simulate a registration delay. Remove this and replace with your registration
         // code if using a registration system
         $timeout(function () {
@@ -114,7 +224,10 @@ angular.module('conFusion.controllers', [])
         };
          $scope.takePicture = function() {
             $cordovaCamera.getPicture(options).then(function(imageData) {
+                console.log("here is pucture daat");
+                console.log(imageData);
                 $scope.registration.imgSrc = "data:image/jpeg;base64," + imageData;
+                $scope.registration.imgContent = imageData;
             }, function(err) {
                 console.log(err);
             });
@@ -145,16 +258,40 @@ angular.module('conFusion.controllers', [])
             });
           };
     });
-})
-.controller('MenuController', ['$scope', 'dishes', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPlatform', '$cordovaLocalNotification', '$cordovaToast', function ($scope, dishes, favoriteFactory, baseURL, $ionicListDelegate, $ionicPlatform, $cordovaLocalNotification, $cordovaToast) {
+    
+    
+    
+}])
+.controller('MenuController', ['$scope', 'dishes', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPlatform', '$cordovaLocalNotification', '$cordovaToast', '$firebaseArray','firebaseImagesFactory','$timeout', function ($scope, dishes, favoriteFactory, baseURL, $ionicListDelegate, $ionicPlatform, $cordovaLocalNotification, $cordovaToast,  $firebaseArray, firebaseImagesFactory, $timeout) {
+          
+    //Test Firebase
+  //  var ref = firebase.database().ref();
+    
+    
+    //$scope.dishes = $firebaseArray(ref.child('dishes'));
+    
+    console.log("loading menu controllers");
+    
+    
             $scope.baseURL = baseURL;
             $scope.tab = 1;
             $scope.filtText = '';
             $scope.showDetails = false;
            
-             $scope.dishes =dishes;
-            
-                        
+            $scope.dishes = dishes;
+           console.log(dishes);
+        
+    
+            $scope.dishes.$loaded().then(function(data) {
+                angular.forEach(data, function(currentDishObj, currentDishValue) {
+                    firebaseImagesFactory.getImageUrlForCurrentDish(currentDishObj);
+                });
+            });
+             
+      $timeout(function() {        
+    }, 2000);
+  
+    
             $scope.select = function(setTab) {
                 $scope.tab = setTab;
                 
@@ -179,6 +316,7 @@ angular.module('conFusion.controllers', [])
             $scope.toggleDetails = function() {
                 $scope.showDetails = !$scope.showDetails;
             };
+        
             $scope.addFavorite = function (index) {
                 console.log("index is " + index);
                 favoriteFactory.addToFavorites(index);
@@ -332,12 +470,14 @@ angular.module('conFusion.controllers', [])
 
         // implement the IndexController and About Controller here
 
-.controller('IndexController', ['$scope','dish','corporate','promotion',  'baseURL', function ($scope, dish,corporate,promotion ,  baseURL) {
+.controller('IndexController', ['$scope','dish','corporate','promotion',  'baseURL', '$firebaseObject', function ($scope, dish,corporate,promotion ,  baseURL, $firebaseObject) {
+    console.log("inside Indexcontrroller");
                         $scope.baseURL = baseURL;
                         $scope.leader = corporate;
                         $scope.showDish = true;
                         //$scope.message="Loading ...";
-                        $scope.dish = dish;
+                        dish.$bindTo($scope, "dish");
+                      //  $scope.dish = dish;
                         $scope.promotion = promotion;
       }])
 
