@@ -120,7 +120,8 @@ angular.module('conFusion.controllers', [])
             console.log("Login Start::");
             $scope.showLoading;
                 var firebaseAuthObject = $firebaseAuth();
-                 firebaseAuthObject.$signInWithEmailAndPassword($scope.loginData.username, $scope.loginData.password).then(function(resultMsg){
+             firebaseAuthObject.$signInWithEmailAndPassword($scope.loginData.username, $scope.loginData.password).then(function(resultMsg){    
+            //firebaseAuthObject.$signInWithEmailAndPassword("rosysardana@gmail.com", "Rosy2941").then(function(resultMsg){
                         console.log(resultMsg.email);
                                 $rootScope.email = resultMsg.email;
                                 firebaseImagesFactory.getImageUrlForProfilePicture('profilePic/'+resultMsg.email+'.jpeg');
@@ -262,26 +263,11 @@ angular.module('conFusion.controllers', [])
     
     
 }])
-.controller('MenuController', ['$scope', 'dishes', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPlatform', '$cordovaLocalNotification', '$cordovaToast', '$firebaseArray','firebaseImagesFactory','$timeout', function ($scope, dishes, favoriteFactory, baseURL, $ionicListDelegate, $ionicPlatform, $cordovaLocalNotification, $cordovaToast,  $firebaseArray, firebaseImagesFactory, $timeout) {
-          
-    //Test Firebase
-  //  var ref = firebase.database().ref();
-    
-    
-    //$scope.dishes = $firebaseArray(ref.child('dishes'));
-    
-    console.log("loading menu controllers");
-    
-    
-            $scope.baseURL = baseURL;
+.controller('MenuController', ['$scope', 'dishes', 'favoriteFactory', '$ionicListDelegate', '$ionicPlatform', '$cordovaLocalNotification', '$cordovaToast', '$firebaseArray','firebaseImagesFactory','$timeout', function ($scope, dishes, favoriteFactory, $ionicListDelegate, $ionicPlatform, $cordovaLocalNotification, $cordovaToast,  $firebaseArray, firebaseImagesFactory, $timeout) {
             $scope.tab = 1;
             $scope.filtText = '';
             $scope.showDetails = false;
-           
             $scope.dishes = dishes;
-           console.log(dishes);
-        
-    
             $scope.dishes.$loaded().then(function(data) {
                 angular.forEach(data, function(currentDishObj, currentDishValue) {
                     firebaseImagesFactory.getImageUrlForCurrentDish(currentDishObj);
@@ -379,9 +365,10 @@ angular.module('conFusion.controllers', [])
             };
         }])
 
-    .controller('DishDetailController', ['$scope', '$stateParams','dish', '$ionicPopover', '$ionicModal', 'menuFactory', 'favoriteFactory', 'baseURL', '$ionicPlatform','$cordovaLocalNotification', '$cordovaToast', function($scope, $stateParams, dish, $ionicPopover, $ionicModal, menuFactory, favoriteFactory, baseURL, $ionicPlatform,$cordovaLocalNotification, $cordovaToast) {
-
-        $scope.baseURL = baseURL;
+    .controller('DishDetailController', ['$scope', '$stateParams','dish', '$ionicPopover', '$ionicModal', 'menuFirebaseFactory','$firebaseArray','firebaseImagesFactory', 'favoriteFactory','$ionicPlatform','$cordovaLocalNotification', '$cordovaToast', function($scope, $stateParams, dish, $ionicPopover, $ionicModal, menuFirebaseFactory,$firebaseArray,firebaseImagesFactory, favoriteFactory,$ionicPlatform,$cordovaLocalNotification, $cordovaToast) {
+           dish.$loaded().then(function(data) {
+               firebaseImagesFactory.getImageUrlForCurrentDish(data);
+            });
         $scope.dish = {};
         $scope.showDish = false;
         $scope.message="Loading ...";
@@ -450,7 +437,7 @@ angular.module('conFusion.controllers', [])
         }
 }])
 
-        .controller('DishCommentController', ['$scope', 'menuFactory', function($scope,menuFactory) {
+        .controller('DishCommentController', ['$scope', 'menuFirebaseFactory', function($scope,menuFirebaseFactory) {
             
             $scope.mycomment = {rating:5, comment:"", author:"", date:""};
             
@@ -470,31 +457,39 @@ angular.module('conFusion.controllers', [])
 
         // implement the IndexController and About Controller here
 
-.controller('IndexController', ['$scope','dish','corporate','promotion',  'baseURL', '$firebaseObject', function ($scope, dish,corporate,promotion ,  baseURL, $firebaseObject) {
-    console.log("inside Indexcontrroller");
-                        $scope.baseURL = baseURL;
-                        $scope.leader = corporate;
+.controller('IndexController', ['$scope','dish','corporate','promotion','$firebaseArray','firebaseImagesFactory', '$firebaseObject', function ($scope, dish,corporate,promotion , $firebaseArray , firebaseImagesFactory,$firebaseObject) {
                         $scope.showDish = true;
-                        //$scope.message="Loading ...";
-                        dish.$bindTo($scope, "dish");
-                      //  $scope.dish = dish;
-                        $scope.promotion = promotion;
+                        $scope.dish = dish;
+            dish.$loaded().then(function(data) {
+               firebaseImagesFactory.getImageUrlForCurrentDish(data);
+            });
+             $scope.promotion = promotion;
+            promotion.$loaded().then(function(data){
+                firebaseImagesFactory.getImageUrlForPromotion(data);
+            });
+            $scope.leader = corporate;
+        
+      corporate.$loaded().then(function(data){
+          firebaseImagesFactory.getImageUrlForLeadership(data);
+      });
       }])
 
 
-        .controller('AboutController', ['$scope','corporateAboutUs', 'baseURL', function($scope,corporateAboutUs, baseURL) {
-                    console.log("inside AboutController");
-                      $scope.baseURL = baseURL;  
-            console.log("inside AboutController: got baseURL");
+.controller('AboutController',['$scope','corporateAboutUs','$firebaseArray','firebaseImagesFactory',
+                              function($scope,corporateAboutUs,$firebaseArray,firebaseImagesFactory) {
+                                  
                     $scope.leaders = corporateAboutUs;
-            console.log("inside AboutController: GOt leaders");
-                    console.log($scope.leaders);
+                    corporateAboutUs.$loaded().then(function(data){
+                              angular.forEach(data,function(currentLeadershipObj,currentLeadershipValue){
+                              firebaseImagesFactory.getImageUrlForLeadership(currentLeadershipObj);
+                            });
+                        }) ;  
             
-                    }])
+}])
 
 
 
-       .controller('FavoritesController', ['$scope', 'dishes','favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout','$cordovaVibration',function ($scope, dishes,favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout,$cordovaVibration) {
+.controller('FavoritesController', ['$scope', 'dishes','favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout','$cordovaVibration',function ($scope, dishes,favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout,$cordovaVibration) {
       $scope.baseURL = baseURL;
     $scope.shouldShowDelete = false;
 

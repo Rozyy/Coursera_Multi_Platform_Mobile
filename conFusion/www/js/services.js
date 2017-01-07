@@ -15,7 +15,37 @@ angular.module('conFusion.services', ['ngResource'])
            };
             return menuFac;
         }])
-        .factory('firebaseImagesFactory', ['$firebaseObject','$rootScope', function($firebaseObject, $rootScope) {
+
+  .factory('promotionFirebaseFactory', ['$firebaseArray', '$firebaseObject', function ($firebaseArray, $firebaseObject) {
+           var promoFac = {};
+      promoFac.getPromotionForIndex = function(index) {
+          console.log("promotion factory start");
+          var childKey = "promotions/"+index;
+          var ref = firebase.database().ref().child(childKey);
+          console.log("promotion factory end");
+          return $firebaseObject(ref)  
+      };
+      return promoFac;
+}])
+
+     .factory('corporateFirebaseFactory', ['$firebaseArray', '$firebaseObject', function ($firebaseArray, $firebaseObject) {
+           var leadershipFac = {};
+   leadershipFac.getAllLeaders = function(){
+        var ref = firebase.database().ref();
+        return $firebaseArray(ref.child('leadership'));
+    };
+    
+      leadershipFac.getLeadershipForIndex = function(index) {
+          var childKey = "leadership/"+index;
+          var ref = firebase.database().ref().child(childKey);
+         return $firebaseObject(ref)  
+      };
+      return leadershipFac;
+     }])
+
+
+
+.factory('firebaseImagesFactory', ['$firebaseObject','$rootScope', function($firebaseObject, $rootScope) {
             var firebaseImageFac = {};
             firebaseImageFac.getImageUrlForCurrentDish = function(currentDish) {
                 var storageRef = firebase.storage().ref();
@@ -27,7 +57,28 @@ angular.module('conFusion.services', ['ngResource'])
                 });
             };
             
-            
+            firebaseImageFac.getImageUrlForPromotion = function(currentPromotion) {
+                var storageRef = firebase.storage().ref();
+                var starsRef = storageRef.child(currentPromotion.image);
+                starsRef.getDownloadURL().then(function(url) {
+                    currentPromotion.imageURL = url;  
+                }).catch(function(error) {
+                    return '';
+                });
+            };
+         
+                firebaseImageFac.getImageUrlForLeadership = function(currentLeadership){
+                    var storageRef = firebase.storage().ref();
+                    var starsRef = storageRef.child(currentLeadership.image);
+                     starsRef.getDownloadURL().then(function(url) {
+                    currentLeadership.imageURL = url;  
+                    }).catch(function(error) {
+                    return '';
+                    });
+                };
+    
+    
+    
             firebaseImageFac.getImageUrlForProfilePicture = function(imageName) {
                 var storageRef = firebase.storage().ref();
                 var starsRef = storageRef.child(imageName);
@@ -36,7 +87,7 @@ angular.module('conFusion.services', ['ngResource'])
                     $rootScope.profilePictureURL = url;  
                 }).catch(function(error) {
                     console.log("error profile pic url");
-                    return '';
+                   $rootScope.profilePictureURL = ""; 
                 });
             };
             
@@ -59,23 +110,6 @@ angular.module('conFusion.services', ['ngResource'])
             return loginFunction;
 
          }])
-        .factory('promotionFactory', ['$resource', 'baseURL', function ($resource, baseURL) {
-            return $resource(baseURL + "promotions/:id");
-
-         }])
-
-
-        .factory('corporateFactory', ['$resource', 'baseURL', function($resource,baseURL) {
-    
-            console.log("Inside corporateFactory");
-            return $resource(baseURL+"leadership/:id" , null, {
-                'update': {
-                    method: 'PUT'
-                }
-            });
-    
-        }])
-
         .factory('feedbackFactory', ['$resource', 'baseURL', function($resource,baseURL) {
     
     

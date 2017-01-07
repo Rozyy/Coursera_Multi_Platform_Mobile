@@ -10,7 +10,7 @@
             <span class="badge badge-assertive">{{dish.label}}</span>
         </div>
         <div class="item item-thumbnail-left item-text-wrap">
-            <img ng-src="{{baseURL+dish.image}}" alt="Uthappizza">
+            <img ng-src="{{dish.imageURL}}" alt="Uthappizza">
             <h2>{{dish.name}}
              <span class="badge">{{dish.price | currency}}</span></h2>
             <p>{{dish.description}}</p>
@@ -22,7 +22,7 @@
             <span class="badge badge-assertive">{{promotion.label}}</span>
           </div>
           <div class="item item-thumbnail-left item-text-wrap">
-               <img ng-src="{{baseURL+promotion.image}}" alt="{{promotion.name}}">
+               <img ng-src="{{promotion.imageURL}}" alt="{{promotion.name}}">
                 <h2>{{promotion.name}}
                  <span class="badge">{{promotion.price | currency}}</span></h2>
                 <p>{{promotion.description}}</p>
@@ -33,7 +33,7 @@
             Meet our Culinary Specialists
           </div>
           <div class="item item-thumbnail-left item-text-wrap">
-               <img ng-src="{{baseURL+leader.image}}" alt="{{leader.name}}">
+               <img ng-src="{{leader.imageURL}}" alt="{{leader.name}}">
                 <h2>{{leader.name}}</h2>
                 <h4>{{leader.designation}}</h4>
                 <p>{{leader.description}}</p>

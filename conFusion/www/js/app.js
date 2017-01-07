@@ -75,11 +75,11 @@ angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conF
              dish: ['menuFirebaseFactory', function (menuFirebaseFactory) {
                     return menuFirebaseFactory.getDishForIndex('0');
                 }],
-             promotion: ['promotionFactory', function (promotionFactory) {
-                    return promotionFactory.get({id: 0});
-                }],
-              corporate: ['corporateFactory', function (corporateFactory) {
-            return corporateFactory.get({id: 3});
+             promotion: ['promotionFirebaseFactory', function (promotionFirebaseFactory) {
+                    return promotionFirebaseFactory.getPromotionForIndex(0);
+                }],  
+             corporate: ['corporateFirebaseFactory', function (corporateFirebaseFactory) {
+                    return corporateFirebaseFactory.getLeadershipForIndex(3);
               }]
           }
       }
@@ -93,9 +93,8 @@ angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conF
           templateUrl: 'templates/aboutus.html',
             controller: 'AboutController',
             resolve: {
-                corporateAboutUs: ['corporateFactory',function(corporateFactory){
-                    console.log("Querying Corporate Factory o");
-                    return corporateFactory.query();
+                corporateAboutUs: ['corporateFirebaseFactory',function(corporateFirebaseFactory){
+                      return corporateFirebaseFactory.getAllLeaders();
                     
                 }]
             }
