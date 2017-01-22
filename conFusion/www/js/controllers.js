@@ -92,8 +92,19 @@ angular.module('conFusion.controllers', [])
         };
 
 }])
+.controller('RestaurantLocationController', ['$scope', '$window', function($scope, $window){
+    console.log("**RestaurantLocationController location");
+    $scope.myOriginModel = {isMyOriginLocationAvailable : false};
+    $scope.myOriginModel.myOriginLocation =  "";
+    $scope.getDrivingDirection = function(){
+        $scope.myOriginModel.isMyOriginLocationAvailable = true;
+    };
+    $scope.openGoogleMapTest = function() {
+         $window.open("geo:40.5727209,-74.33391460000001?q=1567 Oak Tree Rd, Iselin, NJ 08830" , '_system');
+    };
+}])
 .controller('LoginController',['$firebaseAuth', '$firebaseObject', '$scope', '$ionicLoading', '$location','$state', '$ionicHistory', '$timeout', '$rootScope', '$ionicSideMenuDelegate', '$ionicModal','$ionicPlatform', '$cordovaCamera', 'firebaseImagesFactory', function($firebaseAuth, $firebaseObject, $scope, $ionicLoading, $location, $state, $ionicHistory, $timeout,  $rootScope, $ionicSideMenuDelegate,  $ionicModal, $ionicPlatform, $cordovaCamera, firebaseImagesFactory){
-    
+    console.log("***login controller");
   $scope.$on('$ionicView.afterEnter', function(event) {
     $rootScope.isHideMenuButton = true;
   });
@@ -489,23 +500,22 @@ angular.module('conFusion.controllers', [])
 
 
 
-.controller('FavoritesController', ['$scope', 'dishes','favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout','$cordovaVibration',function ($scope, dishes,favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout,$cordovaVibration) {
+.controller('FavoritesController', ['$scope', 'dishes','favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout','$cordovaVibration', 'firebaseImagesFactory',function ($scope, dishes,favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout,$cordovaVibration, firebaseImagesFactory) {
       $scope.baseURL = baseURL;
     $scope.shouldShowDelete = false;
-
     $scope.favorites = favorites;
-
     $scope.dishes = dishes;
          console.log($scope.dishes, $scope.favorites);
-
+            $scope.dishes.$loaded().then(function(data) {
+                angular.forEach(data, function(currentDishObj, currentDishValue) {
+                    firebaseImagesFactory.getImageUrlForCurrentDish(currentDishObj);
+                });
+            });
         $scope.toggleDelete = function () {
         $scope.shouldShowDelete = !$scope.shouldShowDelete;
         console.log($scope.shouldShowDelete);
         }
-
-      
           $scope.deleteFavorite = function (index) {
-
         var confirmPopup = $ionicPopup.confirm({
             title: 'Confirm Delete',
             template: 'Are you sure you want to delete this item?'
@@ -520,21 +530,20 @@ angular.module('conFusion.controllers', [])
                 console.log('Canceled delete');
             }
         });
-
         $scope.shouldShowDelete = false;
-
     }
-   
     }])
-.filter('favoriteFilter', function () {
+.filter('favoriteFilter', [function () {
     return function (dishes, favorites) {
         var out = [];
         for (var i = 0; i < favorites.length; i++) {
             for (var j = 0; j < dishes.length; j++) {
-                if (dishes[j].id === favorites[i].id)
+                if (dishes[j].id === favorites[i].id){
                     out.push(dishes[j]);
+                }
+                    
             }
         }
         return out;
 
-    }});
+    }}]);

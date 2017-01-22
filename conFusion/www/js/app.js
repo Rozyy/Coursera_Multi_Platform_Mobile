@@ -1,4 +1,4 @@
-angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conFusion.services', 'firebase'])
+angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conFusion.services', 'firebase', 'ngMap'])
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $cordovaSplashscreen, $timeout) {
      $ionicPlatform.ready(function(){
     
@@ -154,6 +154,15 @@ angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conF
                 return menuFirebaseFactory.getDishForIndex($stateParams.id);
             }]
         }
+      }
+    }
+  })
+  .state('app.restaurantLocation', {
+    url: '/restaurantLocation',
+    views: {
+      'mainContent': {
+        templateUrl: 'templates/restaurantMap.html',
+        controller: 'RestaurantLocationController'
       }
     }
   });
