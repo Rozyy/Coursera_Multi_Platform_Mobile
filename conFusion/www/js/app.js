@@ -70,18 +70,7 @@ angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conF
     views: {
       'mainContent': {
         templateUrl: 'templates/home.html',
-          controller: 'IndexController',
-          resolve: {
-             dish: ['menuFirebaseFactory', function (menuFirebaseFactory) {
-                    return menuFirebaseFactory.getDishForIndex('0');
-                }],
-             promotion: ['promotionFirebaseFactory', function (promotionFirebaseFactory) {
-                    return promotionFirebaseFactory.getPromotionForIndex(0);
-                }],  
-             corporate: ['corporateFirebaseFactory', function (corporateFirebaseFactory) {
-                    return corporateFirebaseFactory.getLeadershipForIndex(3);
-              }]
-          }
+          controller: 'IndexController'
       }
     }
   })
@@ -133,12 +122,7 @@ angular.module('conFusion', ['ionic', 'ngCordova', 'conFusion.controllers','conF
       views: {
         'mainContent': {
           templateUrl: 'templates/menu.html',
-          controller: 'MenuController',
-            resolve:{
-                dishes:['menuFirebaseFactory',function(menuFirebaseFactory){
-                    return menuFirebaseFactory.getAllDishes();
-                }]
-            }
+          controller: 'MenuController'
         }
       }
     })

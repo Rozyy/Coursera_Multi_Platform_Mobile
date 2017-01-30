@@ -8,10 +8,11 @@ angular.module('conFusion.services', ['ngResource'])
                 var ref = firebase.database().ref();
                return $firebaseArray(ref.child('dishes'));
             };
-            menuFac.getDishForIndex = function(index) {      
+            menuFac.getDishForIndex = function(index) {    
+                console.log("getting dish at index****");
                 var childKey = "dishes/"+index;
                 var ref = firebase.database().ref().child(childKey);
-                return $firebaseObject(ref)
+                return $firebaseObject(ref);
            };
             return menuFac;
         }])
@@ -23,7 +24,7 @@ angular.module('conFusion.services', ['ngResource'])
           var childKey = "promotions/"+index;
           var ref = firebase.database().ref().child(childKey);
           console.log("promotion factory end");
-          return $firebaseObject(ref)  
+          return $firebaseObject(ref)  ;
       };
       return promoFac;
 }])
@@ -36,9 +37,10 @@ angular.module('conFusion.services', ['ngResource'])
     };
     
       leadershipFac.getLeadershipForIndex = function(index) {
+          console.log("getting leader at index****");
           var childKey = "leadership/"+index;
           var ref = firebase.database().ref().child(childKey);
-         return $firebaseObject(ref)  
+         return $firebaseObject(ref)  ;
       };
       return leadershipFac;
      }])
@@ -104,6 +106,7 @@ angular.module('conFusion.services', ['ngResource'])
                         return true;
                     }).catch(function(error) {
                         console.log("loin failes");
+                      
                         return false;
                     });
             };
@@ -173,4 +176,45 @@ angular.module('conFusion.services', ['ngResource'])
     }
   }
 }])
+
+.service('reloadViewService', function(){
+    var isReloadHomeView = false;
+    var isReloadMenuView = false;
+    var isReloadFavoriteView = false;
+    var isReloadLocationView = false;
+    var reloadViewServiceVar = {};
+    var cleanUpControllers = [];
+    
+    reloadViewServiceVar.resetReloadView = function() {
+        this.isReloadHomeView = true;
+        this.isReloadMenuView = true;
+        this.isReloadFavoriteView = true;
+        this.isReloadLocationView = true;
+    }
+    reloadViewServiceVar.setIsReloadHomeView = function(isReloadHomeViewParam) {
+        this.isReloadHomeView = isReloadHomeViewParam;
+    }
+    reloadViewServiceVar.getIsReloadHomeView = function() {
+        return this.isReloadHomeView;
+    }
+    reloadViewServiceVar.setIsReloadMenuView = function(isReloadMenuViewParam) {
+        this.isReloadMenuView = isReloadMenuViewParam;
+    }
+    reloadViewServiceVar.getIsReloadMenuView = function() {
+        return this.isReloadMenuView;
+    }
+    reloadViewServiceVar.setIsReloadFavoriteView = function(isReloadFavoriteViewParam) {
+        this.isReloadFavoriteView = isReloadFavoriteViewParam;
+    }
+    reloadViewServiceVar.getIsReloadFavoriteView = function() {
+        return this.isReloadFavoriteView;
+    }
+    reloadViewServiceVar.setIsReloadLocationView = function(isReloadLocationViewParam) {
+        this.isReloadLocationView = isReloadLocationViewParam;
+    }
+    reloadViewServiceVar.getIsReloadLocationView = function() {
+        return this.isReloadLocationView;
+    }
+    return reloadViewServiceVar;
+})
 ;
