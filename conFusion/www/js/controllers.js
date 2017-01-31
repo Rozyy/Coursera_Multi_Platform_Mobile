@@ -110,6 +110,7 @@ angular.module('conFusion.controllers', [])
                 $scope.loginData.password = '';
                 reloadViewService.resetReloadView();
             }).catch(function(error) {
+                console.error(error);
                 console.log("login fails");
                 //Showing invalid login pop up
                 var alertPopup = $ionicPopup.alert({ 
@@ -217,7 +218,7 @@ angular.module('conFusion.controllers', [])
     console.log("menucontroller start");
      $scope.$on("cleanUpTasks", function(){
         console.log("clean up now menu");
-        $scope.dishes.$destroy();
+      //  $scope.dishes.$destroy();
     });
       $scope.$on('$ionicView.beforeEnter', function(){
           console.log("enter menucontroller");
@@ -376,9 +377,11 @@ angular.module('conFusion.controllers', [])
 .controller('IndexController', ['$scope','firebaseImagesFactory', 'menuFirebaseFactory', 'promotionFirebaseFactory',    'corporateFirebaseFactory', 'reloadViewService', function ($scope , firebaseImagesFactory, menuFirebaseFactory,         promotionFirebaseFactory, corporateFirebaseFactory, reloadViewService) { 
   console.log("indexcontroller start");
     $scope.$on("cleanUpTasks", function(){
-        $scope.dish.$destroy();
-        $scope.promotion.$destroy();
-        $scope.leader.$destroy();
+        console.log("clean up dishes");
+      //  $scope.dish.$destroy();
+        //$scope.promotion.$destroy();
+        //$scope.leader.$destroy();
+        
     });
     $scope.$on('$ionicView.beforeEnter', function(){
         console.log("indexcontroller before enter:: start");
