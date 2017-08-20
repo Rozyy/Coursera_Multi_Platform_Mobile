@@ -6,12 +6,14 @@ var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
+var mainBowerFiles = require('main-bower-files');
+var clean = require('gulp-clean');
 
 var paths = {
   sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['sass']);
+gulp.task('default', ['sass', 'cleanLib', 'bower:copyfiles']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/ionic.app.scss')
@@ -24,6 +26,18 @@ gulp.task('sass', function(done) {
     .pipe(rename({ extname: '.min.css' }))
     .pipe(gulp.dest('./www/css/'))
     .on('end', done);
+});
+//Here we  copy files to folder inside source code.
+//In this case ./src/lib/
+gulp.task('bower:copyfiles', function(cb){
+    return gulp.src(mainBowerFiles({debugging : true}),  { base: './bower_components' })
+        .pipe(gulp.dest('./www/lib'))
+        cb();
+});
+
+gulp.task('cleanLib', function () {
+    return gulp.src('./www/lib/*', {read: false})
+        .pipe(clean());
 });
 
 gulp.task('watch', function() {

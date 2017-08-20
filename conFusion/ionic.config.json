@@ -1,0 +1,12 @@
+{
+  "name": "conFusion",
+  "app_id": "",
+  "integrations": {
+    "cordova": {},
+    "gulp": {}
+  },
+  "type": "ionic1",
+  "watchPatterns": [
+    "scss/**/*"
+  ]
+}

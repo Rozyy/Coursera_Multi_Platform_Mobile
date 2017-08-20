@@ -71,7 +71,7 @@ angular.module('conFusion.controllers', [])
          $window.open("geo:40.5727209,-74.33391460000001?q=1567 Oak Tree Rd, Iselin, NJ 08830" , '_system');
     };
 }])
-.controller('LoginController',['$firebaseAuth', '$firebaseObject', '$scope', '$ionicLoading', '$location','$state', '$ionicHistory', '$timeout', '$rootScope', '$ionicSideMenuDelegate', '$ionicModal','$ionicPlatform', '$cordovaCamera', 'firebaseImagesFactory', 'reloadViewService','$ionicPopup', function($firebaseAuth, $firebaseObject, $scope, $ionicLoading, $location, $state, $ionicHistory, $timeout,  $rootScope, $ionicSideMenuDelegate,  $ionicModal, $ionicPlatform, $cordovaCamera, firebaseImagesFactory, reloadViewService,$ionicPopup){
+.controller('LoginController',['$firebaseAuth', '$firebaseObject', '$scope', '$ionicLoading', '$location','$state', '$ionicHistory', '$timeout', '$rootScope', '$ionicSideMenuDelegate', '$ionicModal','$ionicPlatform', '$cordovaCamera', 'firebaseImagesFactory', 'reloadViewService','$ionicPopup', '$cordovaImagePicker', function($firebaseAuth, $firebaseObject, $scope, $ionicLoading, $location, $state, $ionicHistory, $timeout,  $rootScope, $ionicSideMenuDelegate,  $ionicModal, $ionicPlatform, $cordovaCamera, firebaseImagesFactory, reloadViewService,$ionicPopup, $cordovaImagePicker){
 
   $scope.$on('$ionicView.afterEnter', function(event) {
     $rootScope.isHideMenuButton = true;
@@ -95,8 +95,8 @@ angular.module('conFusion.controllers', [])
     $scope.loginWithUserNamePassword = function() {
             $scope.showLoading;
             var firebaseAuthObject = $firebaseAuth();
-            //firebaseAuthObject.$signInWithEmailAndPassword($scope.loginData.username, $scope.loginData.password).then(function(resultMsg){    
-            firebaseAuthObject.$signInWithEmailAndPassword("rosysardana@gmail.com", "anvi2941").then(function(resultMsg){
+            firebaseAuthObject.$signInWithEmailAndPassword($scope.loginData.username, $scope.loginData.password).then(function(resultMsg){
+            //firebaseAuthObject.$signInWithEmailAndPassword("rosysardana@gmail.com", "anvi2941").then(function(resultMsg){
                 $rootScope.email = resultMsg.email;
                 firebaseImagesFactory.getImageUrlForProfilePicture('profilePic/'+resultMsg.email+'.jpeg');
                 $timeout(function() {        
@@ -206,6 +206,7 @@ angular.module('conFusion.controllers', [])
               quality: 80,
               sourceType: Camera.PictureSourceType.SAVEDPHOTOALBUM
             };
+
           $cordovaImagePicker.getPictures(optionsCordovaImagePicker).then(function (results) {
               $scope.registration.imgSrc = results[0];
             }, function(error) {
