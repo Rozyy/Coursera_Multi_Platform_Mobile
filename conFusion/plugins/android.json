@@ -31,13 +31,13 @@
         "ionic-plugin-keyboard": {
             "PACKAGE_NAME": "com.ionicframework.confusion529896"
         },
-        "cordova-plugin-camera": {
-            "PACKAGE_NAME": "com.ionicframework.confusion529896"
-        },
         "cordova-plugin-image-picker": {
             "PACKAGE_NAME": "com.ionicframework.confusion529896"
         },
         "cordova-plugin-vibration": {
+            "PACKAGE_NAME": "com.ionicframework.confusion529896"
+        },
+        "cordova-plugin-camera": {
             "PACKAGE_NAME": "com.ionicframework.confusion529896"
         }
     },
