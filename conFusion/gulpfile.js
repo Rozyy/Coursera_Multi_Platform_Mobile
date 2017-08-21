@@ -13,7 +13,7 @@ var paths = {
   sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['sass', 'cleanLib', 'bower:copyfiles']);
+gulp.task('default', ['sass', 'bower:copyfiles']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/ionic.app.scss')
