@@ -46,8 +46,8 @@
             "android"
         ],
         "plugins": {
-            "cordova-plugin-camera": {},
-            "cordova-plugin-image-picker": {}
+            "cordova-plugin-image-picker": {},
+            "cordova-plugin-camera": {}
         }
     }
 }
